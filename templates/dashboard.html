@@ -1,0 +1,77 @@
+
+{% extends "base.html" %}
+{% block content %}
+
+<h1>لوحة التحكم</h1>
+
+<section class="panel">
+<h2>رمزك الخاص</h2>
+<h2 dir="ltr">{{ user['code'] }}</h2>
+<button type="button" onclick="copyCode()">نسخ الرمز</button>
+</section>
+
+<section class="panel">
+<h2>رفع الملفات</h2>
+<form action="/upload" method="POST" enctype="multipart/form-data">
+<input type="file" name="files" multiple required>
+<button>رفع الملفات</button>
+</form>
+
+<h3>ملفاتي</h3>
+{% for f in files %}
+<p>
+{{ f['filename'] }}
+<a href="/download/{{ f['id'] }}">تنزيل</a>
+</p>
+{% else %}
+<p>لا توجد ملفات.</p>
+{% endfor %}
+</section>
+
+<section class="panel">
+<h2>استكشاف ملفات شخص آخر</h2>
+<form action="/request-access" method="POST">
+<input name="code" placeholder="أدخل الرمز SB-XXXXXXXX" required>
+<button>إرسال طلب</button>
+</form>
+</section>
+
+<section class="panel">
+<h2>طلبات الوصول الواردة</h2>
+{% for r in incoming %}
+<div class="request">
+<p>{{ r['email'] }} — {{ r['status'] }}</p>
+
+{% if r['status'] == 'pending' %}
+<form method="POST" action="/decision/{{ r['id'] }}/approve">
+<button>موافقة</button>
+</form>
+<form method="POST" action="/decision/{{ r['id'] }}/reject">
+<button class="danger">رفض</button>
+</form>
+{% endif %}
+</div>
+{% else %}
+<p>لا توجد طلبات.</p>
+{% endfor %}
+</section>
+
+<section class="panel">
+<h2>الملفات التي وافق أصحابها على مشاركتها</h2>
+{% for r in approved %}
+<p>{{ r['email'] }}
+<a href="/shared/{{ r['owner'] }}">استكشاف الملفات</a></p>
+{% else %}
+<p>لا توجد ملفات مشتركة حالياً.</p>
+{% endfor %}
+</section>
+
+<script>
+function copyCode() {
+  navigator.clipboard.writeText(
+    document.querySelector('[dir="ltr"]').innerText
+  ).then(() => alert('تم نسخ الرمز'));
+}
+</script>
+
+{% endblock %}
