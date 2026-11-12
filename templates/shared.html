@@ -1,0 +1,19 @@
+
+{% extends "base.html" %}
+{% block content %}
+<section class="panel">
+<h1>الملفات المشتركة</h1>
+<p>صاحب الملفات: {{ owner['email'] }}</p>
+
+{% for f in files %}
+<p>
+{{ f['filename'] }}
+<a href="/download/{{ f['id'] }}">تنزيل</a>
+</p>
+{% else %}
+<p>لا توجد ملفات مرفوعة.</p>
+{% endfor %}
+
+<a href="/dashboard">العودة</a>
+</section>
+{% endblock %}
